@@ -53,12 +53,16 @@ export default async function handler(
     try {
       const ffmpegProcess = ffmpeg(streamUrl)
         .inputOptions([
-          '-rtsp_transport', 'tcp'
+          '-rtsp_transport', 'tcp',
+          '-stimeout', '5000000',
+          '-err_detect', 'ignore_err'
         ])
         .outputOptions([
           '-c:v', 'libx264',
           '-preset', 'ultrafast',
           '-tune', 'zerolatency',
+          '-crf', '28',
+          '-pix_fmt', 'yuv420p',
           '-c:a', 'aac',
           '-ar', '44100',
           '-ac', '2',
