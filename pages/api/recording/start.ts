@@ -61,10 +61,12 @@ export default async function handler(
       ])
       .outputOptions([
         '-c:v', 'libx264',
-        '-preset', 'medium',
+        '-preset', 'superfast', // Faster encoding to prevent CPU overload and corruption
         '-crf', '23',
-        '-pix_fmt', 'yuv420p', // Ensure compatibility with all browsers
-        '-movflags', '+faststart', // Move metadata to start for web playback
+        '-pix_fmt', 'yuv420p',
+        '-movflags', '+faststart',
+        '-vsync', '1', // Enforce constant frame rate
+        '-max_muxing_queue_size', '1024', // Prevent buffer overflow
         '-c:a', 'aac',
         '-b:a', '128k'
       ])

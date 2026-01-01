@@ -209,15 +209,25 @@ export default function RecordingList({ recordings }: RecordingListProps) {
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
               </button>
             </div>
-            <div className="aspect-video bg-black relative">
+            <div className="aspect-video bg-black relative flex items-center justify-center">
               <video 
                 src={`/recordings/${playingVideo}`} 
                 controls 
                 autoPlay 
                 className="w-full h-full"
+                onError={(e) => {
+                  const target = e.target as HTMLVideoElement;
+                  target.style.display = 'none';
+                  target.parentElement?.querySelector('.error-msg')?.classList.remove('hidden');
+                }}
               >
                 Tarayıcınız video oynatmayı desteklemiyor.
               </video>
+              <div className="error-msg hidden absolute text-red-500 flex flex-col items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                <p>Video oynatılamadı veya dosya bulunamadı.</p>
+                <p className="text-xs text-gray-400">Dosya henüz işleniyor olabilir veya bozuk.</p>
+              </div>
             </div>
             <div className="p-4 bg-[#131620] flex justify-end gap-3">
               <button 

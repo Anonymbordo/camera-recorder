@@ -116,16 +116,18 @@ export default async function handler(
       ffmpegProcess.run()
       activeStreams[streamKey] = ffmpegProcess
 
-      // Wait for playlist to be created
+      // Wait for playlist to be created (max 2 seconds)
+      // We don't want to block the response too long, causing 504 Gateway Timeout.
+      // If the file isn't ready, the frontend (HLS.js) will retry 404s.
       let retries = 0
-      while (!fs.existsSync(playlistPath) && retries < 100) { // Increased retries
+      while (!fs.existsSync(playlistPath) && retries < 20) { 
         await new Promise(resolve => setTimeout(resolve, 100))
         retries++
       }
       
+      // Even if file doesn't exist yet, return success so client can start polling
       if (!fs.existsSync(playlistPath)) {
-        console.error('Playlist file was not created in time.')
-        return res.status(504).json({ error: 'Stream initialization timed out. Please try again.' })
+        console.log('Playlist not ready yet, but returning success to avoid timeout.')
       }
       
     } catch (error) {
@@ -136,10 +138,8 @@ export default async function handler(
     // If stream is already active, check if file exists
     if (!fs.existsSync(playlistPath)) {
        // Wait a bit just in case it's being created
-       await new Promise(resolve => setTimeout(resolve, 2000))
-       if (!fs.existsSync(playlistPath)) {
-         return res.status(404).json({ error: 'Stream active but playlist not found' })
-       }
+       await new Promise(resolve => setTimeout(resolve, 1000))
+       // Don't error out, let the client retry
     }
   }
 
