@@ -121,9 +121,10 @@ export default function CameraView({
 
   const startRecording = async () => {
     try {
+      // Always record from main stream for better quality
       const response = await axios.post('/api/recording/start', {
         cameraId,
-        quality: streamQuality
+        quality: 'main'
       })
       
       if (response.data.success) {
@@ -172,8 +173,8 @@ export default function CameraView({
       clearInterval(recordingIntervalRef.current)
     }
     
-    // Upload to Google Drive
-    await uploadToGoogleDrive(filename)
+    // Don't auto upload to Drive anymore
+    // await uploadToGoogleDrive(filename)
     
     onRecordingComplete({
       cameraId,
@@ -183,19 +184,6 @@ export default function CameraView({
     })
     
     setRecordingTime(0)
-  }
-
-  const uploadToGoogleDrive = async (filename: string) => {
-    try {
-      await axios.post('/api/drive/upload', {
-        filename,
-        cameraId
-      })
-      alert('Kayıt Google Drive\'a yüklendi!')
-    } catch (err) {
-      console.error('Google Drive upload error:', err)
-      alert('Google Drive yükleme hatası!')
-    }
   }
 
   const formatTime = (seconds: number) => {

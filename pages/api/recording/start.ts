@@ -23,7 +23,8 @@ export default async function handler(
     return res.status(405).json({ error: 'Method not allowed' })
   }
 
-  const { cameraId, quality = 'sub' } = req.body
+  // Default to 'main' quality as requested by user for better recording quality
+  const { cameraId, quality = 'main' } = req.body
 
   if (!cameraId) {
     return res.status(400).json({ error: 'Camera ID is required' })

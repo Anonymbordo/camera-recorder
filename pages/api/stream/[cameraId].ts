@@ -125,12 +125,21 @@ export default async function handler(
       
       if (!fs.existsSync(playlistPath)) {
         console.error('Playlist file was not created in time.')
-        // Don't kill the process yet, maybe it's just slow connecting
+        return res.status(504).json({ error: 'Stream initialization timed out. Please try again.' })
       }
       
     } catch (error) {
       console.error('Stream creation error:', error)
       return res.status(500).json({ error: 'Failed to create stream' })
+    }
+  } else {
+    // If stream is already active, check if file exists
+    if (!fs.existsSync(playlistPath)) {
+       // Wait a bit just in case it's being created
+       await new Promise(resolve => setTimeout(resolve, 2000))
+       if (!fs.existsSync(playlistPath)) {
+         return res.status(404).json({ error: 'Stream active but playlist not found' })
+       }
     }
   }
 
