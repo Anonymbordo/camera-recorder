@@ -49,6 +49,21 @@ export default async function handler(
   if (!activeStreams[streamKey]) {
     console.log(`Starting stream for Camera ${cameraId} (${quality})...`)
     console.log(`RTSP URL: ${streamUrl}`)
+
+    // Clean up old files to ensure live stream starts fresh
+    try {
+      if (fs.existsSync(playlistPath)) {
+        fs.unlinkSync(playlistPath)
+      }
+      const files = fs.readdirSync(outputDir)
+      files.forEach(file => {
+        if (file.startsWith(`${quality}_`) && file.endsWith('.ts')) {
+          fs.unlinkSync(path.join(outputDir, file))
+        }
+      })
+    } catch (e) {
+      console.error('Error cleaning up old files:', e)
+    }
     
     try {
       // Main stream needs higher quality for ML
