@@ -17,6 +17,7 @@ interface RecordingListProps {
 export default function RecordingList({ recordings }: RecordingListProps) {
   const [searchTerm, setSearchTerm] = useState('')
   const [uploadingId, setUploadingId] = useState<string | null>(null)
+  const [playingVideo, setPlayingVideo] = useState<string | null>(null)
 
   const formatDate = (timestamp: string) => {
     const date = new Date(timestamp)
@@ -159,12 +160,21 @@ export default function RecordingList({ recordings }: RecordingListProps) {
 
                 {/* Actions */}
                 <div className="flex items-start gap-1">
-                  <button className="p-1.5 text-gray-400 hover:text-white hover:bg-gray-800 rounded transition-colors" title="Oynat">
+                  <button 
+                    onClick={() => setPlayingVideo(recording.filename)}
+                    className="p-1.5 text-gray-400 hover:text-white hover:bg-gray-800 rounded transition-colors" 
+                    title="Oynat"
+                  >
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
                   </button>
-                  <button className="p-1.5 text-gray-400 hover:text-white hover:bg-gray-800 rounded transition-colors" title="İndir">
+                  <a 
+                    href={`/recordings/${recording.filename}`}
+                    download
+                    className="p-1.5 text-gray-400 hover:text-white hover:bg-gray-800 rounded transition-colors" 
+                    title="İndir"
+                  >
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                  </button>
+                  </a>
                   <button 
                     onClick={() => handleUpload(recording)}
                     disabled={!!uploadingId}
@@ -180,6 +190,52 @@ export default function RecordingList({ recordings }: RecordingListProps) {
               </div>
             </div>
           ))}
+        </div>
+      )}
+
+      {/* Video Player Modal */}
+      {playingVideo && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+          <div className="bg-[#1a1f2e] border border-gray-800 rounded-2xl w-full max-w-4xl overflow-hidden shadow-2xl">
+            <div className="flex items-center justify-between p-4 border-b border-gray-800">
+              <h3 className="text-lg font-medium text-white flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-blue-500"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                Video Önizleme
+              </h3>
+              <button 
+                onClick={() => setPlayingVideo(null)}
+                className="p-2 text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg transition-colors"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              </button>
+            </div>
+            <div className="aspect-video bg-black relative">
+              <video 
+                src={`/recordings/${playingVideo}`} 
+                controls 
+                autoPlay 
+                className="w-full h-full"
+              >
+                Tarayıcınız video oynatmayı desteklemiyor.
+              </video>
+            </div>
+            <div className="p-4 bg-[#131620] flex justify-end gap-3">
+              <button 
+                onClick={() => setPlayingVideo(null)}
+                className="px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-gray-800 rounded-lg transition-colors"
+              >
+                Kapat
+              </button>
+              <a 
+                href={`/recordings/${playingVideo}`}
+                download
+                className="px-4 py-2 text-sm bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors flex items-center gap-2"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                İndir
+              </a>
+            </div>
+          </div>
         </div>
       )}
     </div>

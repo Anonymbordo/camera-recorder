@@ -44,7 +44,7 @@ export default async function handler(
     return res.status(400).json({ error: 'Already recording this camera' })
   }
 
-  const recordingsDir = path.join(process.cwd(), 'recordings')
+  const recordingsDir = path.join(process.cwd(), 'public', 'recordings')
   if (!fs.existsSync(recordingsDir)) {
     fs.mkdirSync(recordingsDir, { recursive: true })
   }

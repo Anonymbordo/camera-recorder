@@ -35,7 +35,7 @@ export default async function handler(
     const drive = google.drive({ version: 'v3', auth: oauth2Client })
 
     // Read the video file
-    const filePath = path.join(process.cwd(), 'recordings', filename)
+    const filePath = path.join(process.cwd(), 'public', 'recordings', filename)
     
     if (!fs.existsSync(filePath)) {
       return res.status(404).json({ error: 'Recording file not found' })
