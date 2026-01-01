@@ -51,17 +51,22 @@ export default async function handler(
     console.log(`RTSP URL: ${streamUrl}`)
     
     try {
+      // Main stream needs higher quality for ML
+      const isMainStream = quality === 'main'
+      
       const ffmpegProcess = ffmpeg(streamUrl)
         .inputOptions([
           '-rtsp_transport', 'tcp',
-          '-stimeout', '5000000',
+          '-stimeout', '10000000', // 10 seconds timeout
           '-err_detect', 'ignore_err'
         ])
         .outputOptions([
           '-c:v', 'libx264',
-          '-preset', 'ultrafast',
+          '-preset', 'superfast', // Slightly better compression than ultrafast
           '-tune', 'zerolatency',
-          '-crf', '28',
+          // CRF 23 is default high quality. Lower is better but uses more bandwidth/CPU.
+          // For ML, we want good quality but not lossless to avoid network choke.
+          '-crf', isMainStream ? '23' : '28', 
           '-pix_fmt', 'yuv420p',
           '-c:a', 'aac',
           '-ar', '44100',
