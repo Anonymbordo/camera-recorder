@@ -25,6 +25,7 @@ export default function CameraView({
   const [isLoading, setIsLoading] = useState(true)
   const [isPlaying, setIsPlaying] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [showSettings, setShowSettings] = useState(false)
   
   const videoRef = useRef<HTMLVideoElement>(null)
   const hlsRef = useRef<Hls | null>(null)
@@ -257,7 +258,11 @@ export default function CameraView({
       
       {/* Controls */}
       <div className="p-3 bg-[#1a1f2e] border-t border-gray-800 flex gap-3">
-        <button className="p-2 text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg transition-colors">
+        <button 
+          onClick={() => setShowSettings(!showSettings)}
+          className={`p-2 rounded-lg transition-colors ${showSettings ? 'text-blue-500 bg-blue-500/10' : 'text-gray-400 hover:text-white hover:bg-gray-800'}`}
+          title="Ayarlar"
+        >
           <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>
         </button>
         
@@ -304,6 +309,43 @@ export default function CameraView({
           </button>
         )}
       </div>
+
+      {/* Settings Panel */}
+      {showSettings && (
+        <div className="p-4 bg-[#131620] border-t border-gray-800">
+          <h3 className="text-sm font-medium text-white mb-3 flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 1v6m0 6v6m5.196-13.196l-4.243 4.243m0 6.364l4.243 4.243M23 12h-6m-6 0H1m18.196 5.196l-4.243-4.243m0-6.364l4.243-4.243"/></svg>
+            Kamera Ayarları
+          </h3>
+          <div className="space-y-3 text-sm">
+            <div className="flex items-center justify-between py-2 border-b border-gray-800">
+              <span className="text-gray-400">Kamera ID</span>
+              <span className="text-white font-mono">{cameraId}</span>
+            </div>
+            <div className="flex items-center justify-between py-2 border-b border-gray-800">
+              <span className="text-gray-400">Akış Kalitesi</span>
+              <span className="text-white">{streamQuality === 'main' ? 'Yüksek (Ana)' : 'Düşük (Alt)'}</span>
+            </div>
+            <div className="flex items-center justify-between py-2 border-b border-gray-800">
+              <span className="text-gray-400">Durum</span>
+              <span className="text-green-500 flex items-center gap-1">
+                <div className="w-2 h-2 rounded-full bg-green-500"></div>
+                Çevrimiçi
+              </span>
+            </div>
+            <div className="flex items-center justify-between py-2 border-b border-gray-800">
+              <span className="text-gray-400">Oynatma</span>
+              <span className="text-white">{isPlaying ? 'Aktif' : 'Duraklatıldı'}</span>
+            </div>
+            <div className="flex items-center justify-between py-2">
+              <span className="text-gray-400">Kayıt</span>
+              <span className={isRecording ? 'text-red-500' : 'text-white'}>
+                {isRecording ? 'Kaydediliyor' : 'Pasif'}
+              </span>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
