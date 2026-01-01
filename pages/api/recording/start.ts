@@ -63,6 +63,8 @@ export default async function handler(
         '-c:v', 'libx264',
         '-preset', 'medium',
         '-crf', '23',
+        '-pix_fmt', 'yuv420p', // Ensure compatibility with all browsers
+        '-movflags', '+faststart', // Move metadata to start for web playback
         '-c:a', 'aac',
         '-b:a', '128k'
       ])
