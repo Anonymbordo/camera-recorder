@@ -74,8 +74,9 @@ export default async function handler(
           '-b:a', '128k',
           '-f', 'hls',
           '-hls_time', '2',
-          '-hls_list_size', '5',
-          '-hls_flags', 'delete_segments+append_list',
+          '-hls_list_size', '3',
+          '-hls_flags', 'delete_segments',
+          '-hls_allow_cache', '0',
           '-hls_segment_filename', path.join(outputDir, `${quality}_%03d.ts`)
         ])
         .output(playlistPath)
